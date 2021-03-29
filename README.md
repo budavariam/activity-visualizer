@@ -2,6 +2,8 @@
 
 Plotly app to visualize activities in Strava deployed to Heroku
 
+See it live on [heroku](https://activity-visualizer.herokuapp.com/)
+
 ## Getting started
 
 ```bash

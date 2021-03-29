@@ -55,4 +55,19 @@ def display_page(query_string, strava_auth):
 def app_layout_body(strava_auth):
     client = Client(access_token=strava_auth['access_token'])
     athlete = client.get_athlete()
+
+    for activity in client.get_activities(after = "2010-01-01T00:00:00Z",  limit=25):
+        print(activity)
+        print("{0.name} {0.moving_time}".format(activity))
+
+    # Activities can have many streams, you can request desired stream types
+    types = ['time', 'latlng', 'altitude', 'heartrate', 'temp', ]
+
+    streams = client.get_activity_streams(activity.id, types=types, resolution='medium')
+
+    #  Result is a dictionary object.  The dict's key are the stream type.
+    if 'heartrate' in streams.keys():
+        print(streams['heartrate'].data)
+        # TODO: print as a plot
+
     return [f'Welcome, {athlete.firstname} {athlete.lastname}']

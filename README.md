@@ -12,3 +12,15 @@ python3 -m venv venv
 . ./venv/bin/activate
 python3 app.py
 ```
+
+
+## Shoutouts
+
+- [Strava connection](https://github.com/AartGoossens/strava-dash-boilerplate)
+
+## Base requirements
+
+- stravalib
+- dash
+- plotly
+- gunicorn

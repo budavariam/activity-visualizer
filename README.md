@@ -17,6 +17,8 @@ python3 app.py
 ## Shoutouts
 
 - [Strava connection](https://github.com/AartGoossens/strava-dash-boilerplate)
+- [Dash docs](https://plotly.com/python/getting-started/)
+- [Strava playground](https://developers.strava.com/playground/#/Activities/getLoggedInAthleteActivities)
 
 ## Base requirements
 

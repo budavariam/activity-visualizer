@@ -4,7 +4,9 @@ import dash_html_components as html
 from dash.dependencies import Input, Output
 import plotly.graph_objects as go
 
-app = dash.Dash(__name__)
+external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+
+app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 
 app.layout = html.Div([
     html.P("Color:"),
@@ -22,10 +24,12 @@ app.layout = html.Div([
 
 @app.callback(
     Output("graph", "figure"), 
-    [Input("dropdown", "value")])
+    [Input("dropdown", "value")]
+)
 def display_color(color):
     fig = go.Figure(
         data=go.Bar(y=[2, 3, 1], marker_color=color))
     return fig
 
-app.run_server(debug=True)
+if __name__ == '__main__':
+    app.run_server(debug=True)

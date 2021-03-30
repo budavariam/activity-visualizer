@@ -14,11 +14,12 @@ python3 app.py
 ```
 
 
-## Shoutouts
+## Interesting pages
 
 - [Strava connection](https://github.com/AartGoossens/strava-dash-boilerplate)
 - [Dash docs](https://plotly.com/python/getting-started/)
 - [Strava playground](https://developers.strava.com/playground/#/Activities/getLoggedInAthleteActivities)
+- [strarvalib](https://pythonhosted.org/stravalib/)
 
 ## Base requirements
 

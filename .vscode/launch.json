@@ -16,7 +16,7 @@
             },
             "envFile": "${workspaceRoot}/.env",
             "python": "${workspaceRoot}/src/venv/bin/python",
-            "justMyCode": false
+            "justMyCode": true
         },
         {
             "name": "Run flask server",

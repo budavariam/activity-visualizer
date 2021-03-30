@@ -1,13 +1,11 @@
-#!/usr/bin/env python
-
 import os
-import layouts
-import callbacks  # layouts needs to be defined before creating callbacks
+import layout
+import callbacks  # layout needs to be defined before creating callbacks
 import routes
 import appserver
 
 server = appserver.app.server
-if __name__ == "__main__" :
+if __name__ == "__main__":
     debug_mode = True if os.getenv("DEBUG", "false") == "true" else False
     if debug_mode is True:
         print(f"Initiating server. Debug mode enabled.")
@@ -19,4 +17,4 @@ if __name__ == "__main__" :
         debug=debug_mode,
         host="0.0.0.0",
         port=5000
-        )
+    )

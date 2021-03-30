@@ -1,33 +1,36 @@
-from urllib.parse import urlparse, parse_qs
-
 import dash
+import plotly.graph_objects as go
+from urllib.parse import urlparse, parse_qs
 from stravalib import Client
-
-import settings
-from layouts import app_layout, strava_login_layout
 from appserver import app
+import settings
+import style
+from dash.exceptions import PreventUpdate
 
 
 @app.callback(
     output=[
-        dash.dependencies.Output('body', 'children'),
-        dash.dependencies.Output('strava-auth', 'data')
+        dash.dependencies.Output('container-unauthenticated', 'style'),
+        dash.dependencies.Output('container-authenticated', 'style'),
+        dash.dependencies.Output('strava-auth', 'data'),
     ],
     inputs=[
-        dash.dependencies.Input('url', 'search')
+        dash.dependencies.Input('url', 'search'),
     ],
     state=[
-        dash.dependencies.State('strava-auth', 'data')
+        dash.dependencies.State('strava-auth', 'data'),
     ]
 )
-def display_page(query_string, strava_auth):
+def login_verdict(query_string, strava_auth):
+    unauthenticated = style.SHOW
+    authenticated = style.HIDE
+
     if strava_auth is None:
         strava_auth = {}
 
-    body = strava_login_layout
-
     if strava_auth.get('authenticated', False):
-        body = app_layout
+        unauthenticated = style.HIDE
+        authenticated = style.SHOW
     elif query_string is not None:
         query = parse_qs(str(query_string[1:]))
         if 'code' in query:
@@ -39,35 +42,80 @@ def display_page(query_string, strava_auth):
             )
             strava_auth.update(response)
             strava_auth['authenticated'] = True
-            body = app_layout
+            unauthenticated = style.HIDE
+            authenticated = style.SHOW
 
-    return body, strava_auth
+    return unauthenticated, authenticated, strava_auth
 
 
 @app.callback(
     output=[
-        dash.dependencies.Output('app-layout-body', 'children'),
+        dash.dependencies.Output('profile-picture', 'src'),
+        dash.dependencies.Output('welcome-message', 'children'),
+        dash.dependencies.Output('strava-activities', 'data'),
+        dash.dependencies.Output('strava-selected-activity', 'data'),
     ],
     inputs=[
-        dash.dependencies.Input('strava-auth', 'data')
+        dash.dependencies.Input('strava-auth', 'data'),
     ]
 )
-def app_layout_body(strava_auth):
+def welcome_user(strava_auth):
+    if strava_auth is None:
+        raise PreventUpdate
     client = Client(access_token=strava_auth['access_token'])
     athlete = client.get_athlete()
+    activities = client.get_activities(after="2010-01-01T00:00:00Z",  limit=25)
+    store_activities = [
+        {
+            "id": activity.id,
+            "name": activity.name,
+            "max_heartrate": activity.max_heartrate,
+            "kudos_count": activity.kudos_count,
+            "average_heartrate": activity.average_heartrate,
+            "start_date": activity.start_date,
+        } for activity in activities]
+    # print(activity, )
+    # print("{0.name} {0.moving_time}".format(activity))
+    return [
+        athlete.profile,
+        f'Welcome, {athlete.firstname} {athlete.lastname}',
+        {"activities": store_activities},
+        {"selected-activity": store_activities[-1]
+         } if len(store_activities) > 0 else None
+    ]
 
-    for activity in client.get_activities(after = "2010-01-01T00:00:00Z",  limit=25):
-        print(activity)
-        print("{0.name} {0.moving_time}".format(activity))
 
+@app.callback(
+    output=dash.dependencies.Output("graph", "figure"),
+    inputs=[
+        dash.dependencies.Input('strava-auth', 'data'),
+        dash.dependencies.Input('strava-selected-activity', 'data'),
+    ],
+)
+def generate_plot(strava_auth, selected_activity):
+    if strava_auth is None or selected_activity is None:
+        raise PreventUpdate
+    current = selected_activity["selected-activity"]
     # Activities can have many streams, you can request desired stream types
+    # heartrate, distance, time
     types = ['time', 'latlng', 'altitude', 'heartrate', 'temp', ]
-
-    streams = client.get_activity_streams(activity.id, types=types, resolution='medium')
-
     #  Result is a dictionary object.  The dict's key are the stream type.
-    if 'heartrate' in streams.keys():
-        print(streams['heartrate'].data)
-        # TODO: print as a plot
+    client = Client(access_token=strava_auth['access_token'])
+    streams = client.get_activity_streams(
+        current['id'],
+        types=types,
+        resolution='medium'
+    )
+    x = []
+    y = []
+    if 'heartrate' in streams.keys() and 'time' in streams.keys():
+        print("Heartrate", len(streams['heartrate'].data))
+        x = streams['time'].data
+        y = streams['heartrate'].data
 
-    return [f'Welcome, {athlete.firstname} {athlete.lastname}']
+    figure = go.Figure(
+        data=[
+            go.Scatter(x=x, y=y)
+        ]
+    )
+    return figure

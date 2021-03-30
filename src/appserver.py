@@ -10,4 +10,4 @@ app = dash.Dash(
 )
 
 app.title = 'Strava Activity Visualizer'
-app.config.suppress_callback_exceptions = True
+app.config.suppress_callback_exceptions = False

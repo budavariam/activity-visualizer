@@ -39,7 +39,7 @@ app.layout = html.Div([
                 children=[
                     html.Img(
                         id='profile-picture',
-                        src=''
+                        src='',
                     ),
                     html.Span(
                         id='welcome-message',

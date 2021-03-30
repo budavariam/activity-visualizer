@@ -1,0 +1,51 @@
+import dash_core_components as dcc
+import dash_html_components as html
+from stravalib import Client
+import style
+import settings
+from appserver import app
+
+client = Client()
+strava_authorization_url = client.authorization_url(
+    client_id=settings.STRAVA_CLIENT_ID,
+    redirect_uri=settings.APP_URL,
+    state='strava-dash-app'
+)
+
+# parent container
+app.layout = html.Div([
+    dcc.Store(id='strava-auth', storage_type='session'),
+    dcc.Store(id='strava-activities', storage_type='session'),
+    dcc.Store(id='strava-selected-activity', storage_type='session'),
+    dcc.Location(id='url', refresh=False),
+    html.H1(children='Strava Activity Visualizer'),
+    html.Div(
+        id="container-unauthenticated",
+        style=style.SHOW,
+        children=[
+            html.A(
+                html.Img(src='static/btn_strava_connectwith_orange.png'),
+                'Connect with Strava',
+                href=strava_authorization_url,
+            ),
+        ]
+    ),
+    html.Div(
+        id="container-authenticated",
+        style=style.HIDE,
+        children=[
+            dcc.Graph(id="graph"),
+            html.Div(
+                children=[
+                    html.Img(
+                        id='profile-picture',
+                        src=''
+                    ),
+                    html.Span(
+                        id='welcome-message',
+                    ),
+                ]
+            ),
+        ]
+    )
+])

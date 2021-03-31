@@ -12,11 +12,11 @@ strava_authorization_url = client.authorization_url(
     state='strava-dash-app'
 )
 
-# parent container
 app.layout = html.Div([
     dcc.Store(id='strava-auth', storage_type='session'),
-    dcc.Store(id='strava-activities', storage_type='session'),
-    dcc.Store(id='strava-selected-activity', storage_type='session'),
+    dcc.Store(id='strava-activity_list', storage_type='session'),
+    dcc.Store(id='strava-activity-data', storage_type='local'),
+    dcc.Store(id='strava-selected-activity', storage_type='memory'),
     dcc.Location(id='url', refresh=False),
     html.H1(children='Strava Activity Visualizer'),
     html.Div(

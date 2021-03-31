@@ -1,24 +1,26 @@
 import dash
+from dash.dependencies import Input, Output, State
 import plotly.graph_objects as go
 from urllib.parse import urlparse, parse_qs
 from stravalib import Client
 from appserver import app
 import settings
 import style
+import copy
 from dash.exceptions import PreventUpdate
 
 
 @app.callback(
     output=[
-        dash.dependencies.Output('container-unauthenticated', 'style'),
-        dash.dependencies.Output('container-authenticated', 'style'),
-        dash.dependencies.Output('strava-auth', 'data'),
+        Output('container-unauthenticated', 'style'),
+        Output('container-authenticated', 'style'),
+        Output('strava-auth', 'data'),
     ],
     inputs=[
-        dash.dependencies.Input('url', 'search'),
+        Input('url', 'search'),
     ],
     state=[
-        dash.dependencies.State('strava-auth', 'data'),
+        State('strava-auth', 'data'),
     ]
 )
 def login_verdict(query_string, strava_auth):
@@ -50,17 +52,17 @@ def login_verdict(query_string, strava_auth):
 
 @app.callback(
     output=[
-        dash.dependencies.Output('profile-picture', 'src'),
-        dash.dependencies.Output('welcome-message', 'children'),
-        dash.dependencies.Output('strava-activities', 'data'),
-        dash.dependencies.Output('strava-selected-activity', 'data'),
+        Output('profile-picture', 'src'),
+        Output('welcome-message', 'children'),
+        Output('strava-activity_list', 'data'),
+        Output('strava-selected-activity', 'data'),
     ],
     inputs=[
-        dash.dependencies.Input('strava-auth', 'data'),
+        Input('strava-auth', 'data'),
     ]
 )
 def welcome_user(strava_auth):
-    if strava_auth is None:
+    if not 'access_token' in strava_auth:
         raise PreventUpdate
     client = Client(access_token=strava_auth['access_token'])
     athlete = client.get_athlete()
@@ -86,36 +88,56 @@ def welcome_user(strava_auth):
 
 
 @app.callback(
-    output=dash.dependencies.Output("graph", "figure"),
-    inputs=[
-        dash.dependencies.Input('strava-auth', 'data'),
-        dash.dependencies.Input('strava-selected-activity', 'data'),
+    output=[
+        Output("graph", "figure"),
+        State("strava-activity-data", "data"),
     ],
+    inputs=[
+        Input("strava-auth", "data"),
+        Input("strava-selected-activity", "data"),
+    ],
+    state=[
+        State("strava-activity-data", "data"),
+    ]
 )
-def generate_plot(strava_auth, selected_activity):
+def generate_plot(strava_auth, selected_activity, strava_activity_data):
     if strava_auth is None or selected_activity is None:
         raise PreventUpdate
     current = selected_activity["selected-activity"]
-    # Activities can have many streams, you can request desired stream types
-    # heartrate, distance, time
-    types = ['time', 'latlng', 'altitude', 'heartrate', 'temp', ]
-    #  Result is a dictionary object.  The dict's key are the stream type.
-    client = Client(access_token=strava_auth['access_token'])
-    streams = client.get_activity_streams(
-        current['id'],
-        types=types,
-        resolution='medium'
-    )
+    activity_cache = dash.no_update
+    if (not strava_activity_data is None) and (str(current['id']) in strava_activity_data):
+        graph_data = strava_activity_data[str(current['id'])]
+    else:
+        # Activities can have many streams, you can request desired stream types
+        types = ['time', 'latlng', 'altitude', 'heartrate', 'temp', 'distance']
+        #  Result is a dictionary object.  The dict's key are the stream type.
+        client = Client(access_token=strava_auth['access_token'])
+        streams = client.get_activity_streams(
+            current['id'],
+            types=types,
+            resolution='medium'
+        )
+        activity_data = {
+            'time': streams['time'].data if 'time' in streams.keys() else [],
+            'distance': streams['distance'].data if 'distance' in streams.keys() else [],
+            'heartrate': streams['heartrate'].data if 'heartrate' in streams.keys() else [],
+        }
+
+        new_data = {} if strava_activity_data is None else copy.deepcopy(
+            strava_activity_data)
+        new_data[current['id']] = activity_data
+        activity_cache = new_data
+
+        graph_data = activity_data
     x = []
     y = []
-    if 'heartrate' in streams.keys() and 'time' in streams.keys():
-        print("Heartrate", len(streams['heartrate'].data))
-        x = streams['time'].data
-        y = streams['heartrate'].data
+    if 'heartrate' in graph_data and 'time' in graph_data:
+        x = graph_data['time']
+        y = graph_data['heartrate']
 
     figure = go.Figure(
         data=[
             go.Scatter(x=x, y=y)
         ]
     )
-    return figure
+    return [figure, activity_cache]

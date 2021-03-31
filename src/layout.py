@@ -35,7 +35,6 @@ app.layout = html.Div([
         id="container-authenticated",
         style=style.HIDE,
         children=[
-            dcc.Graph(id="graph"),
             html.Div(
                 className="profile",
                 children=[
@@ -48,6 +47,7 @@ app.layout = html.Div([
                     ),
                 ]
             ),
+            dcc.Graph(id="graph"),
         ]
     )
 ])

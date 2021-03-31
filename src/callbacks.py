@@ -80,7 +80,7 @@ def welcome_user(strava_auth):
     # print("{0.name} {0.moving_time}".format(activity))
     return [
         athlete.profile,
-        f'Welcome, {athlete.firstname} {athlete.lastname}',
+        f'Welcome, {athlete.firstname} {athlete.lastname}!',
         {"activities": store_activities},
         {"selected-activity": store_activities[-1]
          } if len(store_activities) > 0 else None
@@ -131,13 +131,24 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
         graph_data = activity_data
     x = []
     y = []
-    if 'heartrate' in graph_data and 'time' in graph_data:
-        x = graph_data['time']
+    if 'heartrate' in graph_data and 'distance' in graph_data:
+        x = graph_data['distance']
         y = graph_data['heartrate']
 
     figure = go.Figure(
         data=[
-            go.Scatter(x=x, y=y)
+            go.Scatter(
+                x=x,
+                y=y,
+                name="Heart Rate Data Mapped To Distance",
+                customdata=list(zip(
+                    [style.format_time(t) for t in graph_data['time']],   # %{customdata[0]}
+                    graph_data['distance'],                               # %{customdata[1]}
+                )),
+                hovertemplate="%{customdata[0]} min<br>"
+                "%{customdata[1]:.1f} m<br>"
+                "<b>%{y} bpm</b><extra></extra>"
+            )
         ]
     )
     return [figure, activity_cache]

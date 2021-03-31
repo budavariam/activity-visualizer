@@ -24,6 +24,7 @@ class App extends Component {
                     setProps={this.setProps}
                     {...this.state}
                 />
+                {this.state.value}
             </div>
         )
     }

@@ -140,7 +140,6 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
             go.Scatter(
                 x=x,
                 y=y,
-                name="Heart Rate Data Mapped To Distance",
                 customdata=list(zip(
                     [style.format_time(t) for t in graph_data['time']],   # %{customdata[0]}
                     graph_data['distance'],                               # %{customdata[1]}

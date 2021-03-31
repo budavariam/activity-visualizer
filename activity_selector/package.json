@@ -11,7 +11,14 @@
     "build:backends": "dash-generate-components ./src/lib/components activity_selector -p package-info.json --r-prefix '' --jl-prefix ''",
     "build:backends-activated": "(. venv/bin/activate || venv\\scripts\\activate && npm run build:py_and_r)",
     "build": "npm run build:js && npm run build:backends",
-    "build:activated": "npm run build:js && npm run build:backends-activated"
+    "build:activated": "npm run build:js && npm run build:backends-activated",
+    "build:py_and_r": "dash-generate-components ./src/lib/components activity_selector -p package-info.json",
+    "build:py_and_r-activated": "(. venv/bin/activate || venv\\scripts\\activate && npm run build:py_and_r)",
+    "presdist": "npm run build",
+    "sdist": "rm -r ./dist/; python setup.py sdist",
+    "postsdist": "(cd ../../;. venv/bin/activate || venv\\scripts\\activate && bash ./activity_selector/script_postsdist.sh)",
+    "sdist:version:activated": "(. venv/bin/activate || venv\\scripts\\activate && npm version patch && npm run sdist)",
+    "sdist:activated": "(. venv/bin/activate || venv\\scripts\\activate && npm run sdist)"
   },
   "author": "Mátyás Budavári <budavariam@gmail.com>",
   "license": "MIT",

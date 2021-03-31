@@ -12,7 +12,9 @@ strava_authorization_url = client.authorization_url(
     state='strava-dash-app'
 )
 
-app.layout = html.Div([
+app.layout = html.Div(
+    className="container",
+    children=[
     html.Link(rel='stylesheet', href='/static/style.css'),
     dcc.Store(id='strava-auth', storage_type='session'),
     dcc.Store(id='strava-activity_list', storage_type='session'),

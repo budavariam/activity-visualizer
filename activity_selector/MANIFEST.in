@@ -1,0 +1,7 @@
+include activity_selector/activity_selector.min.js
+include activity_selector/activity_selector.min.js.map
+include activity_selector/metadata.json
+include activity_selector/package-info.json
+include README.md
+include LICENSE
+include package.json

@@ -1,0 +1,13 @@
+Package: activitySelector
+Title: Activity selector component
+Version: 0.0.1
+Description: Activity selector component
+Depends: R (>= 3.0.2)
+Imports: 
+Suggests: 
+License: MIT + file LICENSE
+URL: 
+BugReports: 
+Encoding: UTF-8
+LazyData: true
+KeepSource: true

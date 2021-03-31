@@ -13,6 +13,7 @@ strava_authorization_url = client.authorization_url(
 )
 
 app.layout = html.Div([
+    html.Link(rel='stylesheet', href='/static/style.css'),
     dcc.Store(id='strava-auth', storage_type='session'),
     dcc.Store(id='strava-activity_list', storage_type='session'),
     dcc.Store(id='strava-activity-data', storage_type='local'),

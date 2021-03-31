@@ -7,7 +7,7 @@
 - [ ] deploy from github to heroku, and set secrets
 - [ ] add plotly clientcallback
 - [ ] create a simple react extension for activity picker
-- [ ] reference stylesheet locally, add classes
+- [x] reference stylesheet locally, add classes
 - [ ] add tooltip customdata
 
 write about:

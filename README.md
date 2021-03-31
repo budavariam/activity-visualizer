@@ -27,3 +27,9 @@ python3 app.py
 - dash
 - plotly
 - gunicorn
+
+## Develop alongside plugin
+
+```bash
+pip install -e ./activity_selector
+```

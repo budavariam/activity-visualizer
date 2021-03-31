@@ -16,7 +16,7 @@
     "build:py_and_r-activated": "(. venv/bin/activate || venv\\scripts\\activate && npm run build:py_and_r)",
     "presdist": "npm run build",
     "sdist": "rm -r ./dist/; python setup.py sdist",
-    "postsdist": "(cd ../../;. venv/bin/activate || venv\\scripts\\activate && bash ./activity_selector/script_postsdist.sh)",
+    "postsdist": "(. venv/bin/activate || venv\\scripts\\activate && bash ./script_postsdist.sh)",
     "sdist:version:activated": "(. venv/bin/activate || venv\\scripts\\activate && npm version patch && npm run sdist)",
     "sdist:activated": "(. venv/bin/activate || venv\\scripts\\activate && npm run sdist)"
   },

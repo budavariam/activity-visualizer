@@ -37,10 +37,11 @@ app.layout = html.Div([
         children=[
             dcc.Graph(id="graph"),
             html.Div(
+                className="profile",
                 children=[
                     html.Img(
                         id='profile-picture',
-                        src='',
+                        src='static/blank_profile.jpg',
                     ),
                     html.Span(
                         id='welcome-message',

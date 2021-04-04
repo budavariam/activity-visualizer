@@ -13,7 +13,6 @@ python3 -m venv venv
 python3 app.py
 ```
 
-
 ## Interesting pages
 
 - [Strava connection](https://github.com/AartGoossens/strava-dash-boilerplate)
@@ -28,8 +27,10 @@ python3 app.py
 - plotly
 - gunicorn
 
-## Develop alongside plugin
+## Develop plugin alongside code
 
 ```bash
-pip install -e ./activity_selector
+cd src
+. ./venv/bin/activate
+pip install -e ../activity_selector
 ```

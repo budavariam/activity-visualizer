@@ -1,5 +1,6 @@
 import dash_core_components as dcc
 import dash_html_components as html
+import activity_selector
 from stravalib import Client
 import style
 import settings
@@ -48,6 +49,10 @@ app.layout = html.Div(
                         id='welcome-message',
                     ),
                 ]
+            ),
+            activity_selector.ActivitySelector(
+                id="activity-selector",
+                label="Test"
             ),
             dcc.Graph(id="graph"),
         ]

@@ -129,7 +129,10 @@ def welcome_user(strava_auth):
     ]
 )
 def generate_plot(strava_auth, selected_activity, strava_activity_data):
-    if strava_auth is None or selected_activity is None:
+    if strava_auth is None:
+        raise PreventUpdate
+    if selected_activity is None:
+        # TODO: show different data
         raise PreventUpdate
     current = selected_activity
     activity_cache = dash.no_update

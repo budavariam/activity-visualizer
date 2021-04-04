@@ -29,8 +29,15 @@ python3 app.py
 
 ## Develop plugin alongside code
 
+- run `npm start` from activity_selector
+- run vscode debug mode for server in a different shell
+- sometimes run `npm run sdist:activated` to install new prod version as seen below
+
 ```bash
-cd src
+pushd activity_selector
+npm run sdist:activated # create prod build 
+popd
+pushd src
 . ./venv/bin/activate
 pip install -e ../activity_selector
 ```

@@ -20,7 +20,11 @@ app.layout = html.Div(
     dcc.Store(id='strava-auth', storage_type='session'),
     dcc.Store(id='strava-activity_list', storage_type='session'),
     dcc.Store(id='strava-activity-data', storage_type='local'),
-    dcc.Store(id='strava-selected-activity', storage_type='memory'),
+    html.Div(id='strava-config', **{
+        "data-debug-mode": False,
+        "data-year": "2021",
+        "data-activities-limit": 500,
+    }),
     dcc.Location(id='url', refresh=False),
     html.H1(children='Strava Activity Visualizer'),
     html.Div(
@@ -52,7 +56,9 @@ app.layout = html.Div(
             ),
             activity_selector.ActivitySelector(
                 id="activity-selector",
-                label="Test"
+                selectedActivity=None,
+                selectedYear="2021",
+                activityList=[],
             ),
             dcc.Graph(id="graph"),
         ]

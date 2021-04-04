@@ -68,7 +68,7 @@ def get_activity_list(strava_auth, selected_year, activities_limit):
     client = Client(access_token=strava_auth['access_token'])
 
     start_date = f"{selected_year}-01-01T00:00:00Z"
-    end_date = f"{int(selected_year)+1}-01-01T00:00:00Z"
+    end_date = f"{selected_year+1}-01-01T00:00:00Z"
 
     activities = client.get_activities(
         after=start_date,  
@@ -80,6 +80,7 @@ def get_activity_list(strava_auth, selected_year, activities_limit):
             "id": activity.id,
             "name": activity.name,
             "max_heartrate": activity.max_heartrate,
+            "has_heartrate": activity.has_heartrate,
             "kudos_count": activity.kudos_count,
             "average_heartrate": activity.average_heartrate,
             "start_date": activity.start_date,

@@ -22,7 +22,7 @@ app.layout = html.Div(
     dcc.Store(id='strava-activity-data', storage_type='local'),
     html.Div(id='strava-config', **{
         "data-debug-mode": False,
-        "data-year": "2021",
+        "data-year": 2021,
         "data-activities-limit": 500,
     }),
     dcc.Location(id='url', refresh=False),

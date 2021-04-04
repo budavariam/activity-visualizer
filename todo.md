@@ -16,3 +16,4 @@ write about:
 - how to turn on debug tools
 - PreventUpdate exception
 - do not miss commas, it will think it's an expression
+- multiple updates if custom component updates the data

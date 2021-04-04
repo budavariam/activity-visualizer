@@ -29,33 +29,34 @@ const ActivitySelector = (props) => {
         */
     // e => setProps({ value: e.target.value })
     return (
-        <div id={id} className="activity-selector-root" onClick={(e) => {
-            // console.log(e, e.target.getAttribute("data-value"))
-            const newActivityId = e.target.getAttribute("data-value")
-            const newActivity = activityList.filter(e => ("" + e.id) === newActivityId)[0]
-            if (newActivityId && newActivity) {
-                setProps({ selectedActivity: newActivity })
-                console.debug("Selected", newActivityId, newActivity)
-            } else {
-                console.warn("Can not read activity id", newActivityId)
-            }
-        }}>
+        <div id={id} className="activity-selector-root">
             <div className="yearSelector">
                 <button
                     className="prev"
-                    onClick={() => setProps((prevProps) => ({ selectedYear: prevProps.selectedYear - 1 }))}
+                    // currently can not use function updater, just object
+                    onClick={() => setProps({ selectedYear: selectedYear - 1 })}
                 >
                     {selectedYear - 1}
                 </button>
                 <span>{selectedYear}</span>
                 <button
                     className="next"
-                    onClick={() => setProps((prevProps) => ({ selectedYear: prevProps.selectedYear + 1 }))}
+                    onClick={() => setProps({ selectedYear: selectedYear + 1 })}
                 >
                     {selectedYear + 1}
                 </button>
             </div>
-            <div className="activity-selector">
+            <div className="activity-selector" onClick={(e) => {
+                // console.log(e, e.target.getAttribute("data-value"))
+                const newActivityId = e.target.getAttribute("data-value")
+                const newActivity = activityList.filter(e => ("" + e.id) === newActivityId)[0]
+                if (newActivityId && newActivity) {
+                    setProps({ selectedActivity: newActivity })
+                    console.debug("Selected", newActivityId, newActivity)
+                } else {
+                    console.warn("Can not read activity id", newActivityId)
+                }
+            }}>
                 {activityList.map((activity) => {
                     console.debug("selectedActivity", selectedActivity, activity.id)
                     return <div className={`activity-item ${selectedActivity && selectedActivity.id === activity.id ? "selected" : ""}`} key={activity.id} data-value={activity.id}>
@@ -92,7 +93,7 @@ ActivitySelector.propTypes = {
     /**
      * Activities are shown from the current selected year
      */
-    selectedYear: PropTypes.string.isRequired,
+    selectedYear: PropTypes.number.isRequired,
 
     /**
      * Dash-assigned callback that should be called to report property changes

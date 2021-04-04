@@ -5,6 +5,9 @@ from stravalib import Client
 import style
 import settings
 from appserver import app
+import datetime
+now = datetime.datetime.now()
+
 
 client = Client()
 strava_authorization_url = client.authorization_url(
@@ -57,7 +60,7 @@ app.layout = html.Div(
             activity_selector.ActivitySelector(
                 id="activity-selector",
                 selectedActivity=None,
-                selectedYear="2021",
+                selectedYear=now.year,
                 activityList=[],
             ),
             dcc.Graph(id="graph"),

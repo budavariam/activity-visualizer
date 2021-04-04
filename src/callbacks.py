@@ -58,7 +58,7 @@ def login_verdict(query_string, strava_auth):
     ],
     inputs=[
         Input('strava-auth', 'data'),
-        Input('strava-config','data-year'),
+        Input("activity-selector", "selectedYear"),
         Input('strava-config','data-activities-limit'),
     ],
 )
@@ -89,7 +89,7 @@ def get_activity_list(strava_auth, selected_year, activities_limit):
     return [
         {"activities": store_activities},
         store_activities,
-        store_activities[-1] if len(store_activities) > 0 else None
+        store_activities[0] if len(store_activities) > 0 else None
     ]
 
 @app.callback(

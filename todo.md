@@ -1,6 +1,6 @@
 # todo
 
-- [ ] add bootstrap components for nicer layout
+<!-- - [ ] add bootstrap components for nicer layout -->
 - [x] call strava api
 - [x] visualize my data
 - [x] store results in localstorage to keep usage in limits
@@ -8,7 +8,10 @@
 - [ ] add plotly clientcallback
 - [ ] create a simple react extension for activity picker
 - [x] reference stylesheet locally, add classes
-- [ ] add tooltip customdata
+- [x] add tooltip customdata
+- [ ] logout btn
+- [ ] deploy extension demo to gh pages
+- [ ] hide/clear plot on no data
 
 write about:
 

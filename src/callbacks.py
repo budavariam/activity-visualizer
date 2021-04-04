@@ -1,5 +1,5 @@
 import dash
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from urllib.parse import urlparse, parse_qs
 from stravalib import Client
@@ -59,7 +59,7 @@ def login_verdict(query_string, strava_auth):
     inputs=[
         Input('strava-auth', 'data'),
         Input("activity-selector", "selectedYear"),
-        Input('strava-config','data-activities-limit'),
+        Input('strava-config', 'data-activities-limit'),
     ],
 )
 def get_activity_list(strava_auth, selected_year, activities_limit):
@@ -71,8 +71,8 @@ def get_activity_list(strava_auth, selected_year, activities_limit):
     end_date = f"{selected_year+1}-01-01T00:00:00Z"
 
     activities = client.get_activities(
-        after=start_date,  
-        before=end_date,  
+        after=start_date,
+        before=end_date,
         limit=activities_limit,
     )
     store_activities = [
@@ -84,13 +84,14 @@ def get_activity_list(strava_auth, selected_year, activities_limit):
             "kudos_count": activity.kudos_count,
             "average_heartrate": activity.average_heartrate,
             "start_date": activity.start_date,
-        } for activity in activities]
+        } for activity in activities][::-1]
 
     return [
         {"activities": store_activities},
         store_activities,
         store_activities[0] if len(store_activities) > 0 else None
     ]
+
 
 @app.callback(
     output=[
@@ -172,8 +173,10 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
                 x=x,
                 y=y,
                 customdata=list(zip(
-                    [style.format_time(t) for t in graph_data['time']],   # %{customdata[0]}
-                    graph_data['distance'],                               # %{customdata[1]}
+                    # %{customdata[0]}
+                    [style.format_time(t) for t in graph_data['time']],
+                    # %{customdata[1]}
+                    graph_data['distance'],
                 )),
                 hovertemplate="%{customdata[0]} min<br>"
                 "%{customdata[1]:.1f} m<br>"
@@ -182,3 +185,12 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
         ]
     )
     return [figure, activity_cache]
+
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='syncSelectedYear'),
+    output=[Output("strava-config", "data-year")],
+    inputs=[Input("activity-selector", "selectedYear")],
+)

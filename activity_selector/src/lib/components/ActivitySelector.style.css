@@ -1,9 +1,20 @@
-.activitySelectorRoot {
+.activity-selector {
     font-family: monospace;
+    max-height: 100px;
+    overflow: auto;
+    border: 1px solid black;
+}
+
+.activity-selector:empty {
+    border: none;
 }
 
 .activity-item {
     cursor: pointer;
     border: 1px solid black;
     padding: 3px;
+}
+
+.selected {
+    background-color: yellow;
 }

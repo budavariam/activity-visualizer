@@ -29,7 +29,7 @@ const ActivitySelector = (props) => {
         */
     // e => setProps({ value: e.target.value })
     return (
-        <div id={id} className="activitySelectorRoot" onClick={(e) => {
+        <div id={id} className="activity-selector-root" onClick={(e) => {
             // console.log(e, e.target.getAttribute("data-value"))
             const newActivityId = e.target.getAttribute("data-value")
             const newActivity = activityList.filter(e => ("" + e.id) === newActivityId)[0]
@@ -40,19 +40,31 @@ const ActivitySelector = (props) => {
                 console.warn("Can not read activity id", newActivityId)
             }
         }}>
-            {activityList.map((activity) => {
-                console.debug("selectedActivity", selectedActivity, activity.id)
-                return <div className="activity-item" key={activity.id} data-value={activity.id}>
-                    {
-                        (selectedActivity && selectedActivity.id === activity.id)
-                            ? <span>&nbsp;&gt;&nbsp;</span>
-                            : <span>&nbsp;&nbsp;&nbsp;</span>
-                    }
-                    {activity.name}&nbsp;
-                    {activity.start_date}&nbsp;
-                    {activity.has_heartrate ? activity.average_heartrate : "-"}
-                </div>
-            })}
+            <div className="yearSelector">
+                <button
+                    className="prev"
+                    onClick={() => setProps((prevProps) => ({ selectedYear: prevProps.selectedYear - 1 }))}
+                >
+                    {selectedYear - 1}
+                </button>
+                <span>{selectedYear}</span>
+                <button
+                    className="next"
+                    onClick={() => setProps((prevProps) => ({ selectedYear: prevProps.selectedYear + 1 }))}
+                >
+                    {selectedYear + 1}
+                </button>
+            </div>
+            <div className="activity-selector">
+                {activityList.map((activity) => {
+                    console.debug("selectedActivity", selectedActivity, activity.id)
+                    return <div className={`activity-item ${selectedActivity && selectedActivity.id === activity.id ? "selected" : ""}`} key={activity.id} data-value={activity.id}>
+                        {activity.start_date}&nbsp;
+                    {activity.has_heartrate ? activity.average_heartrate + "bpm" : ""}&nbsp;
+                    {activity.name}
+                    </div>
+                })}
+            </div>
         </div>
     );
 }

@@ -10,5 +10,5 @@
 - [x] reference stylesheet locally, add classes
 - [x] add tooltip customdata
 - [x] logout btn
-- [ ] deploy extension demo to gh pages
+- [x] deploy extension demo to gh pages
 - [ ] hide/clear plot on no data

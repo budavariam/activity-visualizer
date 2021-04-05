@@ -18,3 +18,20 @@
 .selected {
     background-color: yellow;
 }
+
+.year-selector {
+    text-align: center;
+    margin-bottom: .5em;
+}
+
+.year-selector .current {
+    margin: 0 15px;
+}
+
+.year-selector .button {
+    border: none;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 11px;
+}

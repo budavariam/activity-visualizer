@@ -278,4 +278,4 @@ inst/*
 *.min.js
 *.min.js.map
 *-wps-*.js*
-output.js
+demo-output.js

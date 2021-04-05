@@ -2,7 +2,18 @@
 
 Plotly app to visualize activities in Strava deployed to Heroku
 
-See it live on [heroku](https://activity-visualizer.herokuapp.com/)
+See the whole app live on [heroku](https://activity-visualizer.herokuapp.com/).
+It needs a strava account, and some activity to look at.
+
+![Authenticated app](./docs/dash-app.png)
+
+![Unauthenticated app](./docs/unauthenticated-app.png)
+
+See the custom component's demo page in action,
+(what a programmer would see during development) on
+[github-pages](https://budavariam.github.io/activity-visualizer/).
+
+![Component development](./docs/component-demo-page.png)
 
 ## Getting started
 

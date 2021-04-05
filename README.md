@@ -6,6 +6,15 @@ See it live on [heroku](https://activity-visualizer.herokuapp.com/)
 
 ## Getting started
 
+Set env variables to `/.env` from project dir.
+
+```conf
+STRAVA_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+STRAVA_REFRESH=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 
+STRAVA_CLIENT=xxxxxxx
+APP_URL=http://localhost:5000/
+```
+
 ```bash
 cd src
 python3 -m venv venv
@@ -43,6 +52,8 @@ pip install -e ../activity_selector
 ```
 
 ## Deploy to Heroku
+
+Set env variables as Config vars.
 
 ```bash
 heroku login

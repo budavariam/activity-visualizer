@@ -13,6 +13,12 @@
     cursor: pointer;
     border: 1px solid black;
     padding: 3px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.activity-item * {
+    pointer-events: none; /* do not catch the pointer in children elements so 1 event handler can be defined on top */
 }
 
 .selected {

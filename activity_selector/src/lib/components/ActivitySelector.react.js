@@ -17,6 +17,7 @@ const ActivitySelector = (props) => {
         selectedActivity,
         selectedYear,
         activityList,
+        debugMode,
         setProps,
     } = props;
     const [activityFilter, setActivityFilter] = useState("")
@@ -30,6 +31,9 @@ const ActivitySelector = (props) => {
     * Input or State.
     * `e => setProps({ value: e.target.value })`
     */
+    if (debugMode) {
+        console.debug({ id, selectedYear, activityList, selectedActivity, activityFilter })
+    }
     return (
         <div id={id} className="activity-selector-root">
             <div className="year-selector">
@@ -56,6 +60,9 @@ const ActivitySelector = (props) => {
                     id="activity-filter"
                     value={activityFilter}
                     onChange={(e) => {
+                        if (debugMode) {
+                            console.debug("Filter changed", e)
+                        }
                         setActivityFilter(e.target.value)
                     }}
                     placeholder="Filter activity name..."
@@ -66,7 +73,9 @@ const ActivitySelector = (props) => {
                 const newActivity = activityList.filter(e => ("" + e.id) === newActivityId)
                 if (newActivityId && newActivity && newActivity.length > 0) {
                     setProps({ selectedActivity: newActivity[0] })
-                    console.debug("Selected", newActivityId, newActivity)
+                    if (debugMode) {
+                        console.debug("Selected", newActivityId, newActivity)
+                    }
                 } else {
                     console.warn("Can not read activity id", newActivityId)
                 }
@@ -74,20 +83,23 @@ const ActivitySelector = (props) => {
                 {activityList
                     .filter(activity => activity.name.toLocaleUpperCase().includes(activityFilter.toLocaleUpperCase()))
                     .map((activity) => {
-                        console.debug("selectedActivity", selectedActivity, activity.id)
                         return <div
                             className={`activity-item ${selectedActivity && selectedActivity.id === activity.id
                                 ? "selected"
                                 : ""}`} key={activity.id} data-value={activity.id}
                         >
-                            {activity.kudos_count}&nbsp;
-                            {activity.elapsed_time}&nbsp;
-                            {activity.start_date}&nbsp;
-                            {activity.name}&nbsp;
-                            {activity.distance}&nbsp;
-                            {activity.has_heartrate ? activity.average_heartrate + "bpm" : ""}&nbsp;
-                            {activity.average_speed}&nbsp;
-                            {activity.calories === "None" ? "" : activity.calories}
+                            <div className="left-items">
+                                {activity.kudos_count}&nbsp;
+                                {activity.elapsed_time}&nbsp;
+                                {activity.start_date}&nbsp;
+                                {activity.name}&nbsp;
+                            </div>
+                            <div className="right-items">
+                                {activity.distance}&nbsp;
+                                {activity.has_heartrate ? activity.average_heartrate + "bpm" : ""}&nbsp;
+                                {activity.average_speed}&nbsp;
+                                {activity.calories === "None" ? "" : activity.calories}
+                            </div>
                         </div>
                     })}
             </div>
@@ -97,7 +109,9 @@ const ActivitySelector = (props) => {
 
 export default ActivitySelector
 
-ActivitySelector.defaultProps = {};
+ActivitySelector.defaultProps = {
+    debugMode: false,
+};
 
 ActivitySelector.propTypes = {
     /**
@@ -119,6 +133,11 @@ ActivitySelector.propTypes = {
      * Activities are shown from the current selected year
      */
     selectedYear: PropTypes.number.isRequired,
+
+    /**
+     * Activities are shown from the current selected year
+     */
+    debugMode: PropTypes.bool,
 
     /**
      * Dash-assigned callback that should be called to report property changes

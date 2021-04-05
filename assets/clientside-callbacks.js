@@ -6,7 +6,7 @@
 window.dash_clientside = Object.assign({}, window.dash_clientside, {
     clientside: {
         syncSelectedYear: function(newValue) {
-            console.log("AAA")
+            // console.log("syncSelectedYear synced", newValue)
             return [newValue];
         }
     }

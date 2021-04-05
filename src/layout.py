@@ -77,6 +77,7 @@ app.layout = html.Div(
                     selectedActivity=None,
                     selectedYear=now.year,
                     activityList=[],
+                    debugMode=False,
                 ),
                 dcc.Graph(id="graph"),
             ]

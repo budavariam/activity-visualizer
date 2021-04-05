@@ -17,4 +17,4 @@ COPY ./assets ./assets
 COPY ./logconfig.conf ./logconfig.conf
 
 EXPOSE 5000
-CMD gunicorn --bind 0.0.0.0:5000 --log-config /app/logconfig.conf src.app:server
+CMD gunicorn --bind 0.0.0.0:5000 --chdir ./src --log-config /app/logconfig.conf app:server

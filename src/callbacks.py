@@ -7,6 +7,7 @@ from appserver import app
 import settings
 import style
 import copy
+import json
 from dash.exceptions import PreventUpdate
 
 
@@ -18,14 +19,29 @@ from dash.exceptions import PreventUpdate
     ],
     inputs=[
         Input('url', 'search'),
+        Input('strava-logout', 'n_clicks')
     ],
     state=[
         State('strava-auth', 'data'),
     ]
 )
-def login_verdict(query_string, strava_auth):
+def login_verdict(query_string, logout_click, strava_auth):
+    # https://dash.plotly.com/advanced-callbacks
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        trigger_id = 'No clicks yet'
+    else:
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    ctx_msg = json.dumps({
+        'states': ctx.states,
+        'triggered': ctx.triggered,
+        'inputs': ctx.inputs
+    }, indent=2)
     unauthenticated = style.SHOW
     authenticated = style.HIDE
+
+    if trigger_id == 'strava-logout':
+        return unauthenticated, authenticated, {}
 
     if strava_auth is None:
         strava_auth = {}
@@ -119,7 +135,6 @@ def welcome_user(strava_auth):
         athlete.profile,
         f'{athlete.firstname} {athlete.lastname}',
     ]
-
 
 @app.callback(
     output=[

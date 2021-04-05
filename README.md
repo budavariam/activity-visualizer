@@ -41,3 +41,7 @@ pushd src
 . ./venv/bin/activate
 pip install -e ../activity_selector
 ```
+
+## Common errors
+
+- `Exception has occurred: SyntaxError expression cannot contain assignment, perhaps you meant "=="?`, you most probably missed a comma at the end of a line in the layout.

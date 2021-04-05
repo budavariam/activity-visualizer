@@ -36,3 +36,10 @@
     display: inline-block;
     font-size: 11px;
 }
+
+.activity-filter-container {
+    display: flex;
+}
+#activity-filter {
+    width: 100%;
+}

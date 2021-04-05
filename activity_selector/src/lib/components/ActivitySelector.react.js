@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import "./ActivitySelector.style.css"
 
@@ -19,7 +19,7 @@ const ActivitySelector = (props) => {
         activityList,
         setProps,
     } = props;
-
+    const [activityFilter, setActivityFilter] = useState("")
     /*
     * Send the new value to the parent component.
     * setProps is a prop that is automatically supplied
@@ -49,24 +49,42 @@ const ActivitySelector = (props) => {
                     {selectedYear + 1}
                 </button>
             </div>
+            <div className="activity-filter-container">
+                <input
+                    type="text"
+                    name="activity-filter"
+                    id="activity-filter"
+                    value={activityFilter}
+                    onChange={(e) => {
+                        setActivityFilter(e.target.value)
+                    }}
+                    placeholder="Filter activity name..."
+                />
+            </div>
             <div className="activity-selector" onClick={(e) => {
                 const newActivityId = e.target.getAttribute("data-value")
-                const newActivity = activityList.filter(e => ("" + e.id) === newActivityId)[0]
-                if (newActivityId && newActivity) {
-                    setProps({ selectedActivity: newActivity })
+                const newActivity = activityList.filter(e => ("" + e.id) === newActivityId)
+                if (newActivityId && newActivity && newActivity.length > 0) {
+                    setProps({ selectedActivity: newActivity[0] })
                     console.debug("Selected", newActivityId, newActivity)
                 } else {
                     console.warn("Can not read activity id", newActivityId)
                 }
             }}>
-                {activityList.map((activity) => {
-                    console.debug("selectedActivity", selectedActivity, activity.id)
-                    return <div className={`activity-item ${selectedActivity && selectedActivity.id === activity.id ? "selected" : ""}`} key={activity.id} data-value={activity.id}>
-                        {activity.start_date}&nbsp;
-                    {activity.has_heartrate ? activity.average_heartrate + "bpm" : ""}&nbsp;
-                    {activity.name}
-                    </div>
-                })}
+                {activityList
+                    .filter(activity => activity.name.toLocaleUpperCase().includes(activityFilter.toLocaleUpperCase()))
+                    .map((activity) => {
+                        console.debug("selectedActivity", selectedActivity, activity.id)
+                        return <div
+                            className={`activity-item ${selectedActivity && selectedActivity.id === activity.id
+                                ? "selected"
+                                : ""}`} key={activity.id} data-value={activity.id}
+                        >
+                            {activity.start_date}&nbsp;
+                            {activity.has_heartrate ? activity.average_heartrate + "bpm" : ""}&nbsp;
+                            {activity.name}
+                        </div>
+                    })}
             </div>
         </div>
     );

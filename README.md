@@ -13,7 +13,6 @@ python3 -m venv venv
 python3 app.py
 ```
 
-
 ## Interesting pages
 
 - [Strava connection](https://github.com/AartGoossens/strava-dash-boilerplate)
@@ -28,8 +27,21 @@ python3 app.py
 - plotly
 - gunicorn
 
-## Develop alongside plugin
+## Develop plugin alongside code
+
+- run `npm start` from activity_selector
+- run vscode debug mode for server in a different shell
+- sometimes run `npm run sdist:activated` to install new prod version as seen below
 
 ```bash
-pip install -e ./activity_selector
+pushd activity_selector
+npm run sdist:activated # create prod build 
+popd
+pushd src
+. ./venv/bin/activate
+pip install -e ../activity_selector
 ```
+
+## Common errors
+
+- `Exception has occurred: SyntaxError expression cannot contain assignment, perhaps you meant "=="?`, you most probably missed a comma at the end of a line in the layout.

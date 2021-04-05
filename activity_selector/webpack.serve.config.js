@@ -3,10 +3,12 @@ const path = require('path');
 
 config.entry = {main: './src/demo/index.js'};
 config.output = {
-    filename: './output.js',
+    filename: './demo-output.js',
     path: path.resolve(__dirname),
 };
-config.mode = 'development';
+if (process.env.NODE_ENV !== 'production') {
+    config.mode = 'development';
+}
 config.externals = undefined; // eslint-disable-line
 config.devtool = 'inline-source-map';
 module.exports = config;

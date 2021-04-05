@@ -1,0 +1,11 @@
+.app {
+    max-width: 620px;
+    margin: 0 auto;
+}
+.showState {
+    border: 1px solid black;
+    background-color: #cccccc;
+    padding: 10px;
+    max-height: 200px;
+    overflow: auto;
+}

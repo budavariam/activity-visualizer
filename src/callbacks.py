@@ -1,5 +1,5 @@
 import dash
-from dash.dependencies import Input, Output, State
+from dash.dependencies import Input, Output, State, ClientsideFunction
 import plotly.graph_objects as go
 from urllib.parse import urlparse, parse_qs
 from stravalib import Client
@@ -7,6 +7,7 @@ from appserver import app
 import settings
 import style
 import copy
+import json
 from dash.exceptions import PreventUpdate
 
 
@@ -18,14 +19,29 @@ from dash.exceptions import PreventUpdate
     ],
     inputs=[
         Input('url', 'search'),
+        Input('strava-logout', 'n_clicks')
     ],
     state=[
         State('strava-auth', 'data'),
     ]
 )
-def login_verdict(query_string, strava_auth):
+def login_verdict(query_string, logout_click, strava_auth):
+    # https://dash.plotly.com/advanced-callbacks
+    ctx = dash.callback_context
+    if not ctx.triggered:
+        trigger_id = 'No clicks yet'
+    else:
+        trigger_id = ctx.triggered[0]['prop_id'].split('.')[0]
+    ctx_msg = json.dumps({
+        'states': ctx.states,
+        'triggered': ctx.triggered,
+        'inputs': ctx.inputs
+    }, indent=2)
     unauthenticated = style.SHOW
     authenticated = style.HIDE
+
+    if trigger_id == 'strava-logout':
+        return unauthenticated, authenticated, {}
 
     if strava_auth is None:
         strava_auth = {}
@@ -52,10 +68,56 @@ def login_verdict(query_string, strava_auth):
 
 @app.callback(
     output=[
+        Output('strava-activity_list', 'data'),
+        Output('activity-selector', 'activityList'),
+        Output('activity-selector', 'selectedActivity'),
+    ],
+    inputs=[
+        Input('strava-auth', 'data'),
+        Input("activity-selector", "selectedYear"),
+        Input('strava-config', 'data-activities-limit'),
+    ],
+)
+def get_activity_list(strava_auth, selected_year, activities_limit):
+    if not 'access_token' in strava_auth:
+        raise PreventUpdate
+    client = Client(access_token=strava_auth['access_token'])
+
+    start_date = f"{selected_year}-01-01T00:00:00Z"
+    end_date = f"{selected_year+1}-01-01T00:00:00Z"
+
+    activities = client.get_activities(
+        after=start_date,
+        before=end_date,
+        limit=activities_limit,
+    )
+    store_activities = [
+        {
+            "id": activity.id,
+            "name": activity.name,
+            "max_heartrate": activity.max_heartrate,
+            "has_heartrate": activity.has_heartrate,
+            "kudos_count": activity.kudos_count,
+            "average_heartrate": activity.average_heartrate,
+            "start_date": str(activity.start_date).replace("+00:00", ""),
+            "elapsed_time": str(activity.elapsed_time).replace(" ", ""),
+            "distance": str(activity.distance).replace(" ", ""),
+            "calories": str(activity.calories).replace(" ", ""),
+            "average_speed": str(activity.average_speed).replace(" ", ""),
+            "max_speed": str(activity.max_speed).replace(" ", ""),
+        } for activity in activities][::-1]
+
+    return [
+        {"activities": store_activities},
+        store_activities,
+        store_activities[0] if len(store_activities) > 0 else None
+    ]
+
+
+@app.callback(
+    output=[
         Output('profile-picture', 'src'),
         Output('welcome-message', 'children'),
-        Output('strava-activity_list', 'data'),
-        Output('strava-selected-activity', 'data'),
     ],
     inputs=[
         Input('strava-auth', 'data'),
@@ -66,26 +128,13 @@ def welcome_user(strava_auth):
         raise PreventUpdate
     client = Client(access_token=strava_auth['access_token'])
     athlete = client.get_athlete()
-    activities = client.get_activities(after="2010-01-01T00:00:00Z",  limit=25)
-    store_activities = [
-        {
-            "id": activity.id,
-            "name": activity.name,
-            "max_heartrate": activity.max_heartrate,
-            "kudos_count": activity.kudos_count,
-            "average_heartrate": activity.average_heartrate,
-            "start_date": activity.start_date,
-        } for activity in activities]
+
     # print(activity, )
     # print("{0.name} {0.moving_time}".format(activity))
     return [
         athlete.profile,
-        f'Welcome, {athlete.firstname} {athlete.lastname}!',
-        {"activities": store_activities},
-        {"selected-activity": store_activities[-1]
-         } if len(store_activities) > 0 else None
+        f'{athlete.firstname} {athlete.lastname}',
     ]
-
 
 @app.callback(
     output=[
@@ -94,16 +143,19 @@ def welcome_user(strava_auth):
     ],
     inputs=[
         Input("strava-auth", "data"),
-        Input("strava-selected-activity", "data"),
+        Input("activity-selector", "selectedActivity"),
     ],
     state=[
         State("strava-activity-data", "data"),
     ]
 )
 def generate_plot(strava_auth, selected_activity, strava_activity_data):
-    if strava_auth is None or selected_activity is None:
+    if strava_auth is None:
         raise PreventUpdate
-    current = selected_activity["selected-activity"]
+    if selected_activity is None:
+        # TODO: show different data
+        raise PreventUpdate
+    current = selected_activity
     activity_cache = dash.no_update
     if (not strava_activity_data is None) and (str(current['id']) in strava_activity_data):
         graph_data = strava_activity_data[str(current['id'])]
@@ -141,8 +193,10 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
                 x=x,
                 y=y,
                 customdata=list(zip(
-                    [style.format_time(t) for t in graph_data['time']],   # %{customdata[0]}
-                    graph_data['distance'],                               # %{customdata[1]}
+                    # %{customdata[0]}
+                    [style.format_time(t) for t in graph_data['time']],
+                    # %{customdata[1]}
+                    graph_data['distance'],
                 )),
                 hovertemplate="%{customdata[0]} min<br>"
                 "%{customdata[1]:.1f} m<br>"
@@ -151,3 +205,12 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
         ]
     )
     return [figure, activity_cache]
+
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='syncSelectedYear'),
+    output=[Output("strava-config", "data-year")],
+    inputs=[Input("activity-selector", "selectedYear")],
+)

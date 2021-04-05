@@ -7,7 +7,7 @@ It needs a strava account, and some activity to look at.
 
 ![Authenticated app](./docs/dash-app.png)
 
-![Unauthenticated app](./docs/unauthenticated-app.png)
+<!-- ![Unauthenticated app](./docs/unauthenticated-app.png) -->
 
 See the custom component's demo page in action,
 (what a programmer would see during development) on
@@ -75,4 +75,4 @@ heroku logs --tail
 ## Common errors
 
 - `Exception has occurred: SyntaxError expression cannot contain assignment, perhaps you meant "=="?`, you most probably missed a comma at the end of a line in the layout.
-- `No module named 'layout'`, 
+- `No module named 'layout'`, most probably gunicorn config can not see the folder properly. needs a `--chdir ./src` prop to set the root

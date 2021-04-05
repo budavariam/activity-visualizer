@@ -80,9 +80,14 @@ const ActivitySelector = (props) => {
                                 ? "selected"
                                 : ""}`} key={activity.id} data-value={activity.id}
                         >
+                            {activity.kudos_count}&nbsp;
+                            {activity.elapsed_time}&nbsp;
                             {activity.start_date}&nbsp;
+                            {activity.name}&nbsp;
+                            {activity.distance}&nbsp;
                             {activity.has_heartrate ? activity.average_heartrate + "bpm" : ""}&nbsp;
-                            {activity.name}
+                            {activity.average_speed}&nbsp;
+                            {activity.calories === "None" ? "" : activity.calories}
                         </div>
                     })}
             </div>

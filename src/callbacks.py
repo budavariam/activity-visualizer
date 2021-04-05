@@ -83,7 +83,12 @@ def get_activity_list(strava_auth, selected_year, activities_limit):
             "has_heartrate": activity.has_heartrate,
             "kudos_count": activity.kudos_count,
             "average_heartrate": activity.average_heartrate,
-            "start_date": activity.start_date,
+            "start_date": str(activity.start_date).replace("+00:00", ""),
+            "elapsed_time": str(activity.elapsed_time).replace(" ", ""),
+            "distance": str(activity.distance).replace(" ", ""),
+            "calories": str(activity.calories).replace(" ", ""),
+            "average_speed": str(activity.average_speed).replace(" ", ""),
+            "max_speed": str(activity.max_speed).replace(" ", ""),
         } for activity in activities][::-1]
 
     return [
@@ -112,7 +117,7 @@ def welcome_user(strava_auth):
     # print("{0.name} {0.moving_time}".format(activity))
     return [
         athlete.profile,
-        f'Welcome, {athlete.firstname} {athlete.lastname}!',
+        f'{athlete.firstname} {athlete.lastname}',
     ]
 
 

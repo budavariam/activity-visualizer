@@ -46,9 +46,11 @@ pip install -e ../activity_selector
 
 ```bash
 heroku login
-git push origin heroku
+git push heroku main
+heroku logs --tail 
 ```
 
 ## Common errors
 
 - `Exception has occurred: SyntaxError expression cannot contain assignment, perhaps you meant "=="?`, you most probably missed a comma at the end of a line in the layout.
+- `No module named 'layout'`, 

@@ -5,11 +5,11 @@
 - [x] visualize my data
 - [x] store results in localstorage to keep usage in limits
 - [ ] deploy from github to heroku, and set secrets
-- [ ] add plotly clientcallback
-- [ ] create a simple react extension for activity picker
+- [x] add plotly clientcallback
+- [x] create a simple react extension for activity picker
 - [x] reference stylesheet locally, add classes
 - [x] add tooltip customdata
-- [ ] logout btn
+- [x] logout btn
 - [ ] deploy extension demo to gh pages
 - [ ] hide/clear plot on no data
 

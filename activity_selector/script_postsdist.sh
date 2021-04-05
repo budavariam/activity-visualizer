@@ -9,4 +9,4 @@ sed -i.bak "s/activity_selector-\S*/$NEW_FILE/" ./requirements.txt
 rm  ./*.bak
 pip install "./$NEW_FILE"
 
-popd
+popd || exit 1

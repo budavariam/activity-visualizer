@@ -136,6 +136,7 @@ def welcome_user(strava_auth):
         f'{athlete.firstname} {athlete.lastname}',
     ]
 
+
 @app.callback(
     output=[
         Output("graph", "figure"),
@@ -161,7 +162,10 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
         graph_data = strava_activity_data[str(current['id'])]
     else:
         # Activities can have many streams, you can request desired stream types
-        types = ['time', 'latlng', 'altitude', 'heartrate', 'temp', 'distance']
+        types = [
+            'time', 'latlng', 'altitude', 'heartrate', 'temp', 'distance', 'velocity_smooth', 
+            # 'cadence', 'moving', 'grade_smooth'
+        ]
         #  Result is a dictionary object.  The dict's key are the stream type.
         client = Client(access_token=strava_auth['access_token'])
         streams = client.get_activity_streams(
@@ -169,10 +173,20 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
             types=types,
             resolution='medium'
         )
+
+        data_hr = streams['heartrate'].data if 'heartrate' in streams.keys() else []
+        data_velocity = streams['velocity_smooth'].data if 'velocity_smooth' in streams.keys() else []
+
         activity_data = {
+            'activity_data': selected_activity,
             'time': streams['time'].data if 'time' in streams.keys() else [],
             'distance': streams['distance'].data if 'distance' in streams.keys() else [],
-            'heartrate': streams['heartrate'].data if 'heartrate' in streams.keys() else [],
+            'heartrate': data_hr,
+            'velocity_smooth': data_velocity,
+            'beats_per_meter': list(map(lambda a: 0 if a[1] == 0 else a[0]/60/a[1], zip(data_hr, data_velocity))),
+            # 'cadence': streams['cadence'].data if 'cadence' in streams.keys() else [],
+            # 'moving': streams['moving'].data if 'moving' in streams.keys() else [],
+            # 'grade_smooth': streams['grade_smooth'].data if 'grade_smooth' in streams.keys() else [],
         }
 
         new_data = {} if strava_activity_data is None else copy.deepcopy(
@@ -182,16 +196,15 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
 
         graph_data = activity_data
     x = []
-    y = []
     if 'heartrate' in graph_data and 'distance' in graph_data:
         x = graph_data['distance']
-        y = graph_data['heartrate']
 
     figure = go.Figure(
         data=[
             go.Scatter(
                 x=x,
-                y=y,
+                y=graph_data['heartrate'],
+                name="Heartbeat",
                 customdata=list(zip(
                     # %{customdata[0]}
                     [style.format_time(t) for t in graph_data['time']],
@@ -201,6 +214,34 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
                 hovertemplate="%{customdata[0]} min<br>"
                 "%{customdata[1]:.1f} m<br>"
                 "<b>%{y} bpm</b><extra></extra>"
+            ),
+            go.Scatter(
+                x=x,
+                y=graph_data['beats_per_meter'],
+                name="Beats per meter",
+                customdata=list(zip(
+                    # %{customdata[0]}
+                    [style.format_time(t) for t in graph_data['time']],
+                    # %{customdata[1]}
+                    graph_data['distance'],
+                )),
+                hovertemplate="%{customdata[0]} min<br>"
+                "%{customdata[1]:.1f} m<br>"
+                "<b>%{y} b/m</b><extra></extra>"
+            ),
+            go.Scatter(
+                x=x,
+                y=graph_data['velocity_smooth'],
+                name="Speed",
+                customdata=list(zip(
+                    # %{customdata[0]}
+                    [style.format_time(t) for t in graph_data['time']],
+                    # %{customdata[1]}
+                    graph_data['distance'],
+                )),
+                hovertemplate="%{customdata[0]} min<br>"
+                "%{customdata[1]:.1f} m<br>"
+                "<b>%{y} m/s</b><extra></extra>"
             )
         ]
     )

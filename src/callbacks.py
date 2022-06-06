@@ -173,14 +173,22 @@ def generate_plot(strava_auth, selected_activity, strava_activity_data):
             types=types,
             resolution='medium'
         )
-
-        data_hr = streams['heartrate'].data if 'heartrate' in streams.keys() else []
-        data_velocity = streams['velocity_smooth'].data if 'velocity_smooth' in streams.keys() else []
+        
+        if streams:
+            data_hr = streams['heartrate'].data if 'heartrate' in streams.keys() else []
+            data_velocity = streams['velocity_smooth'].data if 'velocity_smooth' in streams.keys() else []
+            data_time = streams['time'].data if 'time' in streams.keys() else []
+            data_distance = streams['distance'].data if 'distance' in streams.keys() else []
+        else:
+            data_hr = []
+            data_velocity = []
+            data_time = []
+            data_distance = []
 
         activity_data = {
             'activity_data': selected_activity,
-            'time': streams['time'].data if 'time' in streams.keys() else [],
-            'distance': streams['distance'].data if 'distance' in streams.keys() else [],
+            'time': data_time,
+            'distance': data_distance,
             'heartrate': data_hr,
             'velocity_smooth': data_velocity,
             'beats_per_meter': list(map(lambda a: 0 if a[1] == 0 else a[0]/60/a[1], zip(data_hr, data_velocity))),

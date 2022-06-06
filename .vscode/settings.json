@@ -6,7 +6,8 @@
         "activityBar.foreground": "#15202b",
         "activityBar.inactiveForeground": "#15202b99",
         "activityBarBadge.background": "#02fd4c",
-        "activityBarBadge.foreground": "#15202b"
+        "activityBarBadge.foreground": "#15202b",
+        "sash.hoverBorder": "#fd6f34"
     },
     "peacock.color": "fc4c02",
     "python.pythonPath": "src/venv/bin/python"
